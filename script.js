@@ -113,3 +113,49 @@
 
   document.addEventListener('DOMContentLoaded', loadDashboard);
 })();
+// Roku UI binding (local proxy)
+(function () {
+  function _byId(id) { return document.getElementById(id); }
+
+  function showRokuResult(text) {
+    var out = _byId('roku-result');
+    if (out) out.textContent = text;
+  }
+
+  function fetchRokuInfo(ip, path, cb) {
+    if (!ip) { cb('Missing IP'); return; }
+    var url = '/api/roku?ip=' + encodeURIComponent(ip) + '&path=' + encodeURIComponent(path);
+    fetch(url).then(function (resp) {
+      if (!resp.ok) throw new Error('Status ' + resp.status);
+      return resp.text();
+    }).then(function (txt) {
+      cb(null, txt);
+    }).catch(function (err) {
+      cb(err.message || String(err));
+    });
+  }
+
+  function bindRokuUI() {
+    var ipIn = _byId('roku-ip');
+    var pathSel = _byId('roku-path');
+    var btn = _byId('roku-query');
+    if (!btn || !ipIn || !pathSel) return;
+    btn.onclick = function () {
+      var ip = ipIn.value.trim();
+      var path = pathSel.value || '/query/device-info';
+      showRokuResult('Loading...');
+      fetchRokuInfo(ip, path, function (err, data) {
+        if (err) {
+          showRokuResult('Error: ' + err);
+        } else {
+          showRokuResult(data);
+        }
+      });
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    try { if (typeof loadDashboard === 'function') loadDashboard(); } catch (e) {}
+    bindRokuUI();
+  });
+})();

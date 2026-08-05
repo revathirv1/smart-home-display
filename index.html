@@ -31,6 +31,23 @@
       </div>
     </section>
     <section class="grid" id="dashboard-grid"></section>
+    <section class="auth-panel" id="roku-panel" style="margin-top:18px;">
+      <div class="profile-card">
+        <strong>Roku (local)</strong>
+        <div class="form-row" style="margin-top:8px;">
+          <label for="roku-ip">Roku IP (LAN)</label>
+          <input id="roku-ip" type="text" placeholder="192.168.1.10" />
+        </div>
+        <div style="margin-top:10px;">
+          <button class="control-button" id="roku-query">Get device-info</button>
+          <select id="roku-path" style="margin-left:10px;">
+            <option value="/query/device-info">device-info</option>
+            <option value="/query/apps">apps</option>
+          </select>
+        </div>
+        <pre id="roku-result" style="white-space:pre-wrap; margin-top:12px; max-height:220px; overflow:auto; background:#0f0f0f; padding:10px; border-radius:8px;"></pre>
+      </div>
+    </section>
     <footer class="app-footer">
       <p>Open API bridge · Hardware independent · No proprietary hub required.</p>
     </footer>
