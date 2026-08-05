@@ -6,41 +6,14 @@
   var sceneCountEl = document.getElementById('scene-count');
   var sourceCountEl = document.getElementById('source-count');
 
-  var mockData = {
+  var localFallbackData = {
     devices: [
-      {
-        name: 'Living Room Light',
-        type: 'Light',
-        state: 'On',
-        location: 'Living room'
-      },
-      {
-        name: 'Kitchen Thermostat',
-        type: 'Thermostat',
-        state: '72°F',
-        location: 'Kitchen',
-        status: 'Comfort mode'
-      },
-      {
-        name: 'Front Door Lock',
-        type: 'Lock',
-        state: 'Locked',
-        location: 'Entryway'
-      },
-      {
-        name: 'Bedroom Speaker',
-        type: 'Speaker',
-        state: 'Paused',
-        location: 'Bedroom'
-      }
+      { name: 'Local Light', type: 'Light', state: 'On', location: 'Hallway' }
     ],
     scenes: [
-      { name: 'Good Morning', description: 'Lights on, thermostat to 70°F' },
-      { name: 'Away Mode', description: 'Locks engaged and lights off' }
-    ],
+      { name: 'Local Scene', description: 'Browser fallback only' }],
     sources: [
-      { name: 'Open Developer API' },
-      { name: 'Local Hub' }
+      { name: 'Local cache' }
     ]
   };
 
@@ -50,15 +23,15 @@
     }
   }
 
-  function renderSummary() {
+  function renderSummary(data) {
     if (deviceCountEl) {
-      deviceCountEl.textContent = mockData.devices.length;
+      deviceCountEl.textContent = data.devices.length;
     }
     if (sceneCountEl) {
-      sceneCountEl.textContent = mockData.scenes.length;
+      sceneCountEl.textContent = data.scenes.length;
     }
     if (sourceCountEl) {
-      sourceCountEl.textContent = mockData.sources.length;
+      sourceCountEl.textContent = data.sources.length;
     }
   }
 
@@ -101,19 +74,42 @@
     return card;
   }
 
-  function renderDashboard() {
+  function renderDashboard(data) {
     if (!dashboardGrid) {
       return;
     }
     dashboardGrid.innerHTML = '';
-    mockData.devices.forEach(function (device) {
-      dashboardGrid.appendChild(createDeviceCard(device));
-    });
+    for (var i = 0; i < data.devices.length; i += 1) {
+      dashboardGrid.appendChild(createDeviceCard(data.devices[i]));
+    }
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
-    renderSummary();
-    renderDashboard();
-    updateStatus('Dashboard loaded successfully.');
-  });
+  function loadDashboard() {
+    if (!window.fetch) {
+      updateStatus('Old browser detected: using local fallback data.');
+      renderSummary(localFallbackData);
+      renderDashboard(localFallbackData);
+      return;
+    }
+
+    fetch('/api/data')
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error('Server returned ' + response.status);
+        }
+        return response.json();
+      })
+      .then(function (data) {
+        renderSummary(data);
+        renderDashboard(data);
+        updateStatus('Dashboard loaded from Vercel serverless API.');
+      })
+      .catch(function (error) {
+        updateStatus('Failed to load backend data: ' + error.message);
+        renderSummary(localFallbackData);
+        renderDashboard(localFallbackData);
+      });
+  }
+
+  document.addEventListener('DOMContentLoaded', loadDashboard);
 })();
