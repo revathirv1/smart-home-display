@@ -1,0 +1,132 @@
+/* Smart Home Legacy Dashboard - lightweight, legacy-friendly UI */
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #121212;
+  color: #e8e8e8;
+}
+body {
+  padding: 16px;
+}
+.app-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.app-header {
+  display: block;
+  padding: 20px 18px;
+  border: 1px solid #2d2d2d;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  margin-bottom: 18px;
+}
+.brand {
+  margin-bottom: 12px;
+}
+.badge {
+  display: inline-block;
+  background: #0b8cff;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+}
+.app-header h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+}
+.app-header p {
+  margin: 0;
+  color: #b8b8b8;
+  max-width: 760px;
+}
+.status-panel {
+  margin-top: 16px;
+  padding: 14px 16px;
+  background: #1b1b1b;
+  border-radius: 12px;
+  color: #cdd2d9;
+}
+.summary-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.summary-card {
+  flex: 1 1 180px;
+  padding: 18px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid #2e2e2e;
+}
+.summary-card strong {
+  display: block;
+  color: #9ab;
+  margin-bottom: 8px;
+}
+.summary-card span {
+  font-size: 2rem;
+  line-height: 1;
+}
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.device-card {
+  flex: 1 1 300px;
+  min-width: 260px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid #2d2d2d;
+  padding: 18px;
+}
+.device-card h2 {
+  margin: 0 0 6px;
+  font-size: 1.2rem;
+}
+.device-card .meta {
+  color: #9d9d9d;
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+}
+.device-card .property {
+  display: block;
+  margin-bottom: 8px;
+}
+.control-button {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: none;
+  background: #0b8cff;
+  color: white;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+.control-button.secondary {
+  background: #333;
+  color: #ddd;
+}
+.control-button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.app-footer {
+  margin-top: 24px;
+  padding: 16px;
+  color: #858585;
+  font-size: 0.95rem;
+  text-align: center;
+}
+@media (max-width: 640px) {
+  .summary-panel,
+  .grid {
+    flex-direction: column;
+  }
+}

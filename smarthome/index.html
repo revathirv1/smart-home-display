@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Home Legacy Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand">
+        <span class="badge">Legacy</span>
+        <h1>Smart Home Legacy Dashboard</h1>
+        <p>Transform older tablets, phones, and monitors into a reusable smart home hub.</p>
+      </div>
+      <div class="status-panel" id="status-panel">Loading data from open device APIs...</div>
+    </header>
+    <section class="summary-panel" id="summary-panel">
+      <div class="summary-card">
+        <strong>Devices</strong>
+        <span id="device-count">0</span>
+      </div>
+      <div class="summary-card">
+        <strong>Active Scenes</strong>
+        <span id="scene-count">0</span>
+      </div>
+      <div class="summary-card">
+        <strong>Data Sources</strong>
+        <span id="source-count">0</span>
+      </div>
+    </section>
+    <section class="grid" id="dashboard-grid"></section>
+    <footer class="app-footer">
+      <p>Open API bridge · Hardware independent · No proprietary hub required.</p>
+    </footer>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
