@@ -142,9 +142,15 @@
     if (out) out.textContent = text;
   }
 
-  function fetchRokuInfo(ip, path, cb) {
+  function fetchRokuPath(ip, path, method, cb) {
     if (!ip) { cb('Missing IP'); return; }
+    if (!path) { cb('Missing path'); return; }
+
     var url = '/api/roku?ip=' + encodeURIComponent(ip) + '&path=' + encodeURIComponent(path);
+    if (method) {
+      url += '&method=' + encodeURIComponent(method);
+    }
+
     fetch(url).then(function (resp) {
       if (!resp.ok) throw new Error('Status ' + resp.status);
       return resp.text();
@@ -155,27 +161,61 @@
     });
   }
 
+  function sendRokuKey(ip, key, cb) {
+    if (!key) { cb('Missing Roku key'); return; }
+    showRokuResult('Sending ' + key + '...');
+    fetchRokuPath(ip, '/keypress/' + key, 'POST', function (err, data) {
+      if (err) {
+        cb(err);
+      } else {
+        cb(null, 'Sent ' + key + ' successfully.');
+      }
+    });
+  }
+
   function bindRokuUI() {
     var ipIn = _byId('roku-ip');
     var pathSel = _byId('roku-path');
     var btn = _byId('roku-query');
-    if (!btn || !ipIn || !pathSel) return;
-    btn.onclick = function () {
-      var ip = ipIn.value.trim();
-      var path = pathSel.value || '/query/device-info';
-      showRokuResult('Loading...');
-      fetchRokuInfo(ip, path, function (err, data) {
-        if (err) {
-          showRokuResult('Error: ' + err);
-        } else {
-          showRokuResult(data);
-        }
-      });
-    };
+    if (btn && ipIn && pathSel) {
+      btn.onclick = function () {
+        var ip = ipIn.value.trim();
+        var path = pathSel.value || '/query/device-info';
+        showRokuResult('Loading...');
+        fetchRokuPath(ip, path, 'GET', function (err, data) {
+          if (err) {
+            showRokuResult('Error: ' + err);
+          } else {
+            showRokuResult(data);
+          }
+        });
+      };
+    }
+
+    var buttons = document.querySelectorAll('[data-roku-key]');
+    for (var i = 0; i < buttons.length; i += 1) {
+      (function (button) {
+        var key = button.getAttribute('data-roku-key');
+        if (!key) return;
+        button.onclick = function () {
+          var ip = ipIn ? ipIn.value.trim() : '';
+          if (!ip) {
+            showRokuResult('Enter the Roku LAN IP first.');
+            return;
+          }
+          sendRokuKey(ip, key, function (err, result) {
+            if (err) {
+              showRokuResult('Error: ' + err);
+            } else {
+              showRokuResult(result);
+            }
+          });
+        };
+      })(buttons[i]);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    try { if (typeof loadDashboard === 'function') loadDashboard(); } catch (e) {}
     bindRokuUI();
   });
 })();

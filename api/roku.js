@@ -6,6 +6,7 @@ module.exports = async function (req, res) {
 
   var ip = (req.query && req.query.ip) || '';
   var path = (req.query && req.query.path) || '/';
+  var method = (req.query && req.query.method) || 'GET';
 
   if (!ip) return res.status(400).json({ error: 'missing required "ip" query parameter' });
   if (!/^(?:\d{1,3}\.){3}\d{1,3}$/.test(ip)) {
@@ -26,7 +27,7 @@ module.exports = async function (req, res) {
   var target = 'http://' + ip + ':8060' + path;
 
   try {
-    var fetchRes = await fetch(target, { method: 'GET', redirect: 'follow' });
+    var fetchRes = await fetch(target, { method: method.toUpperCase(), redirect: 'follow' });
     var body = await fetchRes.text();
     var ct = fetchRes.headers.get('content-type') || 'text/plain';
     res.setHeader('content-type', ct);
