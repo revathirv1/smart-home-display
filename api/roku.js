@@ -1,7 +1,10 @@
 module.exports = async function (req, res) {
-  var allowProxy = process.env.ALLOW_ROKU_PROXY === '1' || process.env.VERCEL_ENV !== 'production';
+  var isLocalDev = process.env.NODE_ENV !== 'production' || process.env.VERCEL_ENV !== 'production';
+  var allowProxy = process.env.ALLOW_ROKU_PROXY === '1' || isLocalDev;
   if (!allowProxy) {
-    return res.status(403).json({ error: 'Roku proxy disabled in production. Enable it only for local development.' });
+    return res.status(403).json({
+      error: 'Roku proxy disabled in production. Set ALLOW_ROKU_PROXY=1 for local testing or run outside production.',
+    });
   }
 
   var ip = (req.query && req.query.ip) || '';
