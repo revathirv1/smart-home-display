@@ -111,7 +111,27 @@
       });
   }
 
-  document.addEventListener('DOMContentLoaded', loadDashboard);
+  function bindToggleControls() {
+    var localControls = [
+      { id: 'toggle-living-room-light', name: 'Living Room Light' },
+      { id: 'toggle-front-door-lock', name: 'Front Door Lock' }
+    ];
+
+    for (var i = 0; i < localControls.length; i += 1) {
+      (function (control) {
+        var checkbox = document.getElementById(control.id);
+        if (!checkbox) return;
+        checkbox.addEventListener('change', function () {
+          updateStatus(control.name + ' is ' + (checkbox.checked ? 'On' : 'Off') + '.');
+        });
+      })(localControls[i]);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    loadDashboard();
+    bindToggleControls();
+  });
 })();
 // Roku UI binding (local proxy)
 (function () {

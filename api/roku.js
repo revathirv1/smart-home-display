@@ -1,6 +1,7 @@
 module.exports = async function (req, res) {
-  if (process.env.ALLOW_ROKU_PROXY !== '1') {
-    return res.status(403).json({ error: 'Roku proxy disabled. Set ALLOW_ROKU_PROXY=1 to enable for testing.' });
+  var allowProxy = process.env.ALLOW_ROKU_PROXY === '1' || process.env.VERCEL_ENV !== 'production';
+  if (!allowProxy) {
+    return res.status(403).json({ error: 'Roku proxy disabled in production. Enable it only for local development.' });
   }
 
   var ip = (req.query && req.query.ip) || '';
