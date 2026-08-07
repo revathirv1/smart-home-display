@@ -59,18 +59,31 @@
           </select>
         </div>
         <div style="margin-top:8px; font-size:0.9rem; color:#ccc;">Some Roku models may reject extra query paths or keypress commands. Use device-info, active-app, and the safe basic remote keys.</div>
-        <div class="roku-remote-grid" style="margin-top:14px; display:grid; grid-template-columns: repeat(3, minmax(80px, 1fr)); gap:8px; align-items:center;">
+        <div class="roku-remote" style="margin-top:14px; display:grid; grid-template-columns: repeat(3, 90px); grid-auto-rows: 48px; gap:8px; justify-content:center;">
+          <!-- Top row: Home and Back -->
+          <div></div>
           <button class="control-button" data-roku-key="Home">Home</button>
-          <button class="control-button" data-roku-key="Back">Back</button>
-          <button class="control-button" data-roku-key="Up">Up</button>
-          <button class="control-button" data-roku-key="Down">Down</button>
-          <button class="control-button" data-roku-key="Left">Left</button>
-          <button class="control-button" data-roku-key="Right">Right</button>
+          <div style="text-align:right;"><button class="control-button" data-roku-key="Back">Back</button></div>
+
+          <!-- D-pad: Up -->
+          <div></div>
+          <button class="control-button" data-roku-key="Up">↑</button>
+          <div></div>
+
+          <!-- D-pad middle row: Left, Select, Right -->
+          <button class="control-button" data-roku-key="Left">←</button>
           <button class="control-button" data-roku-key="Select">OK</button>
-          <button class="control-button" data-roku-key="Play">Play</button>
-          <button class="control-button" data-roku-key="Rev">Rev</button>
-          <button class="control-button" data-roku-key="Fwd">Fwd</button>
-          <button class="control-button" data-roku-key="Info">Info</button>
+          <button class="control-button" data-roku-key="Right">→</button>
+
+          <!-- D-pad: Down -->
+          <div></div>
+          <button class="control-button" data-roku-key="Down">↓</button>
+          <div></div>
+
+          <!-- Playback row -->
+          <button class="control-button" data-roku-key="Rev">⏪</button>
+          <button class="control-button" data-roku-key="Play">⏯</button>
+          <button class="control-button" data-roku-key="Fwd">⏩</button>
         </div>
         <pre id="roku-result" style="white-space:pre-wrap; margin-top:12px; max-height:220px; overflow:auto; background:#0f0f0f; padding:10px; border-radius:8px;"></pre>
       </div>

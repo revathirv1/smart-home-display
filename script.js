@@ -141,15 +141,55 @@
     var out = _byId('roku-result');
     if (out) out.textContent = text;
   }
+  var localProxyAvailable = false;
+  var lastKeypress = Object.create(null);
+  var localProxyPort = null;
+
+  function probeLocalProxy(timeoutMs) {
+    timeoutMs = timeoutMs || 800;
+    var ports = [3001, 3000];
+    var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var opts = { method: 'GET' };
+    if (controller) opts.signal = controller.signal;
+
+    var tryPort = function (port) {
+      var probeUrl = 'http://localhost:' + port + '/roku?ip=127.0.0.1&path=/';
+      var timer = setTimeout(function () { if (controller) controller.abort(); }, timeoutMs);
+      return fetch(probeUrl, opts).then(function (r) {
+        clearTimeout(timer);
+        localProxyAvailable = true;
+        localProxyPort = port;
+        return true;
+      }).catch(function () {
+        clearTimeout(timer);
+        return false;
+      });
+    };
+
+    // try ports sequentially
+    return tryPort(ports[0]).then(function (ok) {
+      if (ok) return true;
+      return tryPort(ports[1]).then(function (ok2) {
+        if (ok2) return true;
+        localProxyAvailable = false;
+        localProxyPort = null;
+        return false;
+      });
+    });
+  }
+
+  function buildRokuUrl(ip, path, method) {
+    var base = localProxyAvailable && localProxyPort ? 'http://localhost:' + localProxyPort + '/roku' : '/api/roku';
+    var url = base + '?ip=' + encodeURIComponent(ip) + '&path=' + encodeURIComponent(path);
+    if (method) url += '&method=' + encodeURIComponent(method);
+    return url;
+  }
 
   function fetchRokuPath(ip, path, method, cb) {
     if (!ip) { cb('Missing IP'); return; }
     if (!path) { cb('Missing path'); return; }
 
-    var url = '/api/roku?ip=' + encodeURIComponent(ip) + '&path=' + encodeURIComponent(path);
-    if (method) {
-      url += '&method=' + encodeURIComponent(method);
-    }
+    var url = buildRokuUrl(ip, path, method);
 
     fetch(url).then(function (resp) {
       if (!resp.ok) {
@@ -178,14 +218,55 @@
 
   function sendRokuKey(ip, key, cb) {
     if (!key) { cb('Missing Roku key'); return; }
+    var now = Date.now();
+    var lk = ip + '|' + key;
+    var last = lastKeypress[lk] || 0;
+    if (now - last < 300) { cb('Too many presses, slow down'); return; }
+    lastKeypress[lk] = now;
     showRokuResult('Sending ' + key + '...');
+    disableRemoteButtons(true);
+    var timeout = setTimeout(function () {
+      disableRemoteButtons(false);
+    }, 1500);
+
+    // For navigation keys, send keydown -> keyup for reliable navigation
+    var navKeys = { Up:1, Down:1, Left:1, Right:1 };
+    if (navKeys[key]) {
+      fetchRokuPath(ip, '/keydown/' + key, 'POST', function (err) {
+        if (err) {
+          clearTimeout(timeout);
+          disableRemoteButtons(false);
+          return cb(err);
+        }
+        // short press
+        setTimeout(function () {
+          fetchRokuPath(ip, '/keyup/' + key, 'POST', function (err2) {
+            clearTimeout(timeout);
+            disableRemoteButtons(false);
+            if (err2) return cb(err2);
+            return cb(null, 'Sent ' + key + ' successfully.');
+          });
+        }, 80);
+      });
+      return;
+    }
+
     fetchRokuPath(ip, '/keypress/' + key, 'POST', function (err, data) {
+      clearTimeout(timeout);
+      disableRemoteButtons(false);
       if (err) {
         cb(err);
       } else {
         cb(null, 'Sent ' + key + ' successfully.');
       }
     });
+  }
+
+  function disableRemoteButtons(disable) {
+    var btns = document.querySelectorAll('[data-roku-key]');
+    for (var i = 0; i < btns.length; i += 1) {
+      try { btns[i].disabled = !!disable; } catch (e) {}
+    }
   }
 
   function bindRokuUI() {
@@ -231,6 +312,12 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    bindRokuUI();
+    // probe for a local keep-alive proxy and then bind UI
+    probeLocalProxy(600).then(function () {
+      bindRokuUI();
+      if (localProxyAvailable) {
+        showRokuResult('Using local proxy for Roku (lower latency).');
+      }
+    });
   });
 })();
