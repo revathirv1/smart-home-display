@@ -1,5 +1,3 @@
-const { fetchSmartThingsDevices } = require('./smartthings/utils');
-
 module.exports = async function (req, res) {
   var data = {
     devices: [
@@ -38,17 +36,6 @@ module.exports = async function (req, res) {
       { name: 'Local Hub' }
     ]
   };
-
-  try {
-    var smartThingsResult = await fetchSmartThingsDevices();
-    if (smartThingsResult && Array.isArray(smartThingsResult.devices)) {
-      data.devices = data.devices.concat(smartThingsResult.devices);
-      data.sources.push({ name: smartThingsResult.source || 'SmartThings' });
-    }
-  } catch (err) {
-    console.error('SmartThings aggregation failed:', err.message || err);
-    data.sources.push({ name: 'SmartThings (unavailable)' });
-  }
 
   res.status(200).json(data);
 };
