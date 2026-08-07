@@ -88,6 +88,19 @@
         <pre id="roku-result" style="white-space:pre-wrap; margin-top:12px; max-height:220px; overflow:auto; background:#0f0f0f; padding:10px; border-radius:8px;"></pre>
       </div>
     </section>
+    <section class="auth-panel" id="voice-panel" style="margin-top:18px;">
+      <div class="profile-card">
+        <strong>Voice + camera integrations</strong>
+        <p>New backend routes are ready for Alexa voice control, indirect SmartThings-style command routing, and Ring OAuth.</p>
+        <ul>
+          <li>Alexa skill endpoint: /api/alexa/skill</li>
+          <li>SmartThings-style bridge: /api/smartthings/bridge</li>
+          <li>Ring auth start: /api/ring/auth</li>
+          <li>Ring feed status: /api/ring/feed</li>
+        </ul>
+        <p>These endpoints provide the integration backbone. Add your Amazon developer skill endpoint plus Ring OAuth credentials to go live.</p>
+      </div>
+    </section>
     <footer class="app-footer">
       <p>Open API bridge · Hardware independent · No proprietary hub required.</p>
     </footer>
