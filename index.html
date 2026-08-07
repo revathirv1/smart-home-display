@@ -55,12 +55,10 @@
           <button class="control-button" id="roku-query">Get device-info</button>
           <select id="roku-path" style="margin-left:10px;">
             <option value="/query/device-info">device-info</option>
-            <option value="/query/apps">apps</option>
             <option value="/query/active-app">active-app</option>
-            <option value="/query/available-apps">available-apps</option>
           </select>
         </div>
-        <div style="margin-top:8px; font-size:0.9rem; color:#ccc;">Only supported Roku ECP query endpoints are shown. Unsupported paths may return 403/404.</div>
+        <div style="margin-top:8px; font-size:0.9rem; color:#ccc;">Some Roku models may reject extra query paths or keypress commands. Use device-info, active-app, and the safe basic remote keys.</div>
         <div class="roku-remote-grid" style="margin-top:14px; display:grid; grid-template-columns: repeat(3, minmax(80px, 1fr)); gap:8px; align-items:center;">
           <button class="control-button" data-roku-key="Home">Home</button>
           <button class="control-button" data-roku-key="Back">Back</button>
@@ -72,7 +70,6 @@
           <button class="control-button" data-roku-key="Play">Play</button>
           <button class="control-button" data-roku-key="Rev">Rev</button>
           <button class="control-button" data-roku-key="Fwd">Fwd</button>
-          <button class="control-button" data-roku-key="InstantReplay">Replay</button>
           <button class="control-button" data-roku-key="Info">Info</button>
         </div>
         <pre id="roku-result" style="white-space:pre-wrap; margin-top:12px; max-height:220px; overflow:auto; background:#0f0f0f; padding:10px; border-radius:8px;"></pre>

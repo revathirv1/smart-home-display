@@ -1,9 +1,14 @@
 module.exports = async function (req, res) {
-  var isLocalDev = process.env.NODE_ENV !== 'production' || process.env.VERCEL_ENV !== 'production';
+  var host = (req.headers && req.headers.host) || '';
+  var isLocalHost = /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(host);
+  var isLocalDev = isLocalHost || process.env.NODE_ENV !== 'production' || process.env.VERCEL_ENV !== 'production';
   var allowProxy = process.env.ALLOW_ROKU_PROXY === '1' || isLocalDev;
   if (!allowProxy) {
     return res.status(403).json({
       error: 'Roku proxy disabled in production. Set ALLOW_ROKU_PROXY=1 for local testing or run outside production.',
+      host: host,
+      nodeEnv: process.env.NODE_ENV || 'undefined',
+      vercelEnv: process.env.VERCEL_ENV || 'undefined'
     });
   }
 
@@ -30,8 +35,30 @@ module.exports = async function (req, res) {
   var target = 'http://' + ip + ':8060' + path;
 
   try {
-    var fetchRes = await fetch(target, { method: method.toUpperCase(), redirect: 'follow' });
+    var options = {
+      method: method.toUpperCase(),
+      redirect: 'follow',
+      headers: {
+        Accept: '*/*'
+      }
+    };
+
+    if (options.method === 'POST') {
+      // Roku keypress endpoints typically expect an empty POST with no content-type header.
+    }
+
+    var fetchRes = await fetch(target, options);
     var body = await fetchRes.text();
+
+    if (!fetchRes.ok) {
+      return res.status(fetchRes.status).json({
+        error: 'roku_remote_error',
+        status: fetchRes.status,
+        statusText: fetchRes.statusText,
+        body: body || null
+      });
+    }
+
     var ct = fetchRes.headers.get('content-type') || 'text/plain';
     res.setHeader('content-type', ct);
     return res.status(fetchRes.status).send(body);

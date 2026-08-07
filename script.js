@@ -152,7 +152,22 @@
     }
 
     fetch(url).then(function (resp) {
-      if (!resp.ok) throw new Error('Status ' + resp.status);
+      if (!resp.ok) {
+        return resp.text().then(function (body) {
+          try {
+            var json = JSON.parse(body);
+            if (json.error) {
+              var detail = json.message ? ' - ' + json.message : '';
+              if (json.status && json.statusText) {
+                detail += ' (' + json.status + ' ' + json.statusText + ')';
+              }
+              throw new Error(json.error + detail + (json.body ? '\n' + json.body : ''));
+            }
+          } catch (e) {
+            throw new Error('Status ' + resp.status + ': ' + body);
+          }
+        });
+      }
       return resp.text();
     }).then(function (txt) {
       cb(null, txt);
